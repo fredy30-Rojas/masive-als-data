@@ -1,15 +1,17 @@
-# CELDA 5b: Docking con QVina 2.1 en KAGGLE (sin internet, datos desde el dataset)
+# CELDA 5b: Docking con QVina 2.1 en KAGGLE (dataset + opcional internet)
 # Adaptado de la celda 5 del notebook Kaggle (Vina) + v6_qvina.py (Colab).
 # - Mismo formato CSV: ligand,target,energy,timestamp
 # - Subconjuntos pares/impares, PDBQT reparados del dataset, reanudacion por CSV
 # - VALIDAR=True: acopla una muestra de pares YA hechos (seed 42) y compara con resultados_colab.csv
 # - QVina2 es CPU multihilo (rapido); Vina-GPU seria para GPU real (requiere compilar).
-import csv, glob, os, shutil, subprocess, tarfile, time
+# - Con internet: descarga binario desde GitHub. Sin internet: lo toma del dataset (qvina_kaggle.tar.gz).
+import csv, glob, os, shutil, subprocess, tarfile, time, urllib.request
 
 WORK = '/kaggle/working/masive_als'
 IN = '/kaggle/input/masive-als-datos'
 QVINA_DIR = '/kaggle/working/qvina_linux'
 QVINA_BIN = QVINA_DIR + '/qvina2'
+QVINA_URL = 'https://raw.githubusercontent.com/fredy30-Rojas/masive-als-data/main/qvina_kaggle.tar.gz'
 
 # --- 0) Verificar GPU (informativo: QVina2 es CPU; si hay GPU y se quiere Vina-GPU, otro script) ---
 print('=== VERIFICACION GPU/CPU ===', flush=True)
@@ -17,19 +19,44 @@ gpu = subprocess.run(['nvidia-smi'], capture_output=True, text=True, timeout=30)
 print('nvidia-smi rc=%d (GPU disponible si rc=0)' % gpu.returncode, flush=True)
 print('CPUs:', os.cpu_count(), flush=True)
 
-# --- 1) Extraer binario QVina + librerias Boost desde el dataset (sin internet) ---
-if not os.path.exists(QVINA_BIN):
+# --- 1) Obtener binario QVina + librerias Boost ---
+# Con internet: descarga el paquete completo desde GitHub. Sin internet: desde el dataset.
+def obtener_qvina():
     os.makedirs(QVINA_DIR, exist_ok=True)
+    internet = True
+    try:
+        urllib.request.urlopen('https://raw.githubusercontent.com', timeout=10).close()
+    except Exception:
+        internet = False
+    print('Internet:', 'SI' if internet else 'NO', flush=True)
+    if internet:
+        try:
+            pkg = QVINA_DIR + '/qvina_kaggle.tar.gz'
+            urllib.request.urlretrieve(QVINA_URL, pkg)
+            with tarfile.open(pkg) as t:
+                t.extractall(QVINA_DIR)
+            return True
+        except Exception as ex:
+            print('Descarga GitHub fallo:', str(ex)[:100], flush=True)
+    # Sin internet (o fallo): usar el dataset
     src_tar = IN + '/qvina_kaggle.tar.gz'
-    if not os.path.exists(src_tar):
-        # fallback: archivos planos dentro del dataset
-        for f in ['qvina2', 'libboost_filesystem.so.1', 'libboost_program_options.so.1', 'libboost_thread.so.1']:
-            s = IN + '/' + f
-            if os.path.exists(s):
-                shutil.copy(s, QVINA_DIR + '/' + f)
-    else:
+    if os.path.exists(src_tar):
         with tarfile.open(src_tar) as t:
             t.extractall(QVINA_DIR)
+        return True
+    # Ultimo fallback: archivos planos dentro del dataset
+    ok = False
+    for f in ['qvina2', 'libboost_filesystem.so.1', 'libboost_program_options.so.1', 'libboost_thread.so.1']:
+        s = IN + '/' + f
+        if os.path.exists(s):
+            shutil.copy(s, QVINA_DIR + '/' + f)
+            ok = True
+    return ok
+
+if not os.path.exists(QVINA_BIN):
+    if not obtener_qvina():
+        print('ERROR: no se pudo obtener el binario QVina. Avisa a Fredy.', flush=True)
+        raise SystemExit(1)
     os.chmod(QVINA_BIN, 0o755)
 # LD_LIBRARY_PATH apuntando a las libs boost del paquete
 os.environ['LD_LIBRARY_PATH'] = QVINA_DIR + ':' + os.environ.get('LD_LIBRARY_PATH', '')
