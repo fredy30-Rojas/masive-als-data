@@ -81,14 +81,59 @@ jobs:
           cp /tmp/build.log /tmp/out/build_log.txt 2>/dev/null || echo "sin log"
           echo "Log listo"
 
+      - name: Subir build.log al repo (diagnostico)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd /tmp/out
+          python3 - <<'PY'
+          import base64, json, os, urllib.request
+          TOKEN = os.environ['GH_TOKEN']
+          data = open('build_log.txt','rb').read()
+          path = 'vinagpu_build_log.txt'
+          sha = None
+          try:
+              req = urllib.request.Request('https://api.github.com/repos/fredy30-Rojas/masive-als-data/contents/' + path,
+                  headers={'Authorization': 'token ' + TOKEN})
+              sha = json.loads(urllib.request.urlopen(req, timeout=60).read().decode())['sha']
+          except Exception:
+              pass
+          payload = {'message': 'Log compilacion Vina-GPU', 'content': base64.b64encode(data).decode()}
+          if sha:
+              payload['sha'] = sha
+          req2 = urllib.request.Request('https://api.github.com/repos/fredy30-Rojas/masive-als-data/contents/' + path,
+              data=json.dumps(payload).encode(), method='PUT',
+              headers={'Authorization': 'token ' + TOKEN, 'Content-Type': 'application/json'})
+          try:
+              urllib.request.urlopen(req2, timeout=180)
+              print('LOG SUBIDO AL REPO')
+          except urllib.error.HTTPError as e:
+              print('ERROR log:', e.code, e.read().decode()[:200])
+          PY
+
       - name: Empaquetar binario
         run: |
+          echo "=== Contenido AutoDock dir ==="
+          ls -la /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/ | head -20
+          echo "=== Buscar binario ==="
+          find /tmp/Vina-GPU-2.1 -type f -name 'AutoDock*' -o -type f -name '*-2-1' | head -5
           mkdir -p /tmp/out/vinagpu_linux
-          cp /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/AutoDock-Vina-GPU-2-1 /tmp/out/vinagpu_linux/
+          BIN=$(find /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1 -maxdepth 1 -type f -name 'AutoDock-Vina-GPU-2-1' | head -1)
+          if [ -n "$BIN" ]; then
+            cp "$BIN" /tmp/out/vinagpu_linux/AutoDock-Vina-GPU-2-1
+            echo "Binario copiado: $BIN"
+          else
+            echo "ERROR: no se encontro el binario compilado"
+            ls -la /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/
+            exit 1
+          fi
           cp /usr/lib/x86_64-linux-gnu/libOpenCL.so.1* /tmp/out/vinagpu_linux/ 2>/dev/null || true
           cd /tmp/out
           tar -czf vinagpu_linux.tar.gz vinagpu_linux
           ls -la vinagpu_linux.tar.gz
+          echo "=== file binario ==="
+          file /tmp/out/vinagpu_linux/AutoDock-Vina-GPU-2-1 || true
 
       - name: Subir binario al repo (release binario)
         env:
