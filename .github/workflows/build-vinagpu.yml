@@ -6,6 +6,9 @@ on:
       - '.github/workflows/build-vinagpu.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -78,20 +81,48 @@ jobs:
           cp /tmp/build.log /tmp/out/build_log.txt 2>/dev/null || echo "sin log"
           echo "Log listo"
 
-      - name: Empaquetar (binario + log)
-        if: always()
+      - name: Empaquetar binario
         run: |
           mkdir -p /tmp/out/vinagpu_linux
-          cp /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/AutoDock-Vina-GPU-2-1 /tmp/out/vinagpu_linux/ 2>/dev/null || echo "no binario"
+          cp /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/AutoDock-Vina-GPU-2-1 /tmp/out/vinagpu_linux/
           cp /usr/lib/x86_64-linux-gnu/libOpenCL.so.1* /tmp/out/vinagpu_linux/ 2>/dev/null || true
           cd /tmp/out
           tar -czf vinagpu_linux.tar.gz vinagpu_linux
           ls -la vinagpu_linux.tar.gz
 
-      - name: Subir artefacto (binario o log)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: vinagpu-linux
-          path: /tmp/out/
-          retention-days: 30
+      - name: Subir binario al repo (release binario)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd /tmp/out
+          # push del tar.gz al repo mediante la API con GITHUB_TOKEN
+          python3 - <<'PY'
+          import base64, json, os, urllib.request
+          TOKEN = os.environ['GH_TOKEN']
+          path = 'vinagpu_linux.tar.gz'
+          data = open('vinagpu_linux.tar.gz','rb').read()
+          sha = None
+          try:
+              req = urllib.request.Request('https://api.github.com/repos/fredy30-Rojas/masive-als-data/contents/' + path,
+                  headers={'Authorization': 'token ' + TOKEN})
+              sha = json.loads(urllib.request.urlopen(req, timeout=60).read().decode())['sha']
+          except Exception:
+              pass
+          payload = {'message': 'Vina-GPU-2.1 binario compilado', 'content': base64.b64encode(data).decode()}
+          if sha:
+              payload['sha'] = sha
+          req2 = urllib.request.Request('https://api.github.com/repos/fredy30-Rojas/masive-als-data/contents/' + path,
+              data=json.dumps(payload).encode(), method='PUT',
+              headers={'Authorization': 'token ' + TOKEN, 'Content-Type': 'application/json'})
+          try:
+              urllib.request.urlopen(req2, timeout=180)
+              print('BINARIO SUBIDO AL REPO OK')
+          except urllib.error.HTTPError as e:
+              print('ERROR subiendo:', e.code, e.read().decode()[:200])
+          PY
+
+      - name: Subir log (por si fallo la compilacion)
+        if: failure()
+        run: |
+          echo "Ver build.log en los logs del run"
+          tail -50 /tmp/build.log
