@@ -54,7 +54,7 @@ jobs:
           VINA_GPU_INC_PATH=-I$(WORK_DIR)/lib -I$(WORK_DIR)/OpenCL/inc
           OPENCL_INC_PATH=-I/usr/include
           LIB1=-lboost_program_options -lboost_system -lboost_filesystem -lOpenCL
-          LIB2=-lstdc++
+          LIB2=-lstdc++ -lstdc++fs
           LIB3=-lm -lpthread
           LIB_PATH=-L/usr/lib/x86_64-linux-gnu
           SRC=./lib/*.cpp ./OpenCL/src/wrapcl.cpp $(BOOST_LIB_PATH)/libs/thread/src/pthread/thread.cpp $(BOOST_LIB_PATH)/libs/thread/src/pthread/once.cpp
