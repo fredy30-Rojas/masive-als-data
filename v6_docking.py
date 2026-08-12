@@ -129,6 +129,11 @@ def reparar_pdbqt(ob, nombre, lig):
         if not s:
             print('  SIN_SMILES', nombre, flush=True)
             return False
+        # FIX sales/fragmentos: conservar solo el fragmento mas grande
+        frags = sorted([f.strip() for f in s.split('.') if len(f.strip()) > 1],
+                       key=len, reverse=True)
+        if frags:
+            s = frags[0]
         conv = ob.OBConversion()
         conv.SetInAndOutFormats('smi', 'pdbqt')
         mol = ob.OBMol()
