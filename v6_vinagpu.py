@@ -193,8 +193,11 @@ if VALIDAR and pendientes:
         print('VALIDACION: re-acoplo %d pares ya hechos' % len(muestras), flush=True)
         pendientes = muestras
 
-# --- 8) Acoplar con Vina-GPU (config file por par, como requiere Vina-GPU) ---
-def acoplar(lig, target, exhaustiveness=8):
+# --- 8) Acoplar con Vina-GPU (config file por par) ---
+# NOTA: Vina-GPU-2.1 NO acepta --exhaustiveness ni --cpu (comentados en su parser).
+# El control de esfuerzo es --thread (numero de tareas de computo en la GPU).
+# Ejecutamos con cwd=BIN_DIR para que encuentre los kernels ./OpenCL/ (default_work_path=".").
+def acoplar(lig, target, thread=32):
     info = RECEPTORES[target]
     cfg = '/tmp/cfg_%s_%s.txt' % (os.path.basename(lig).replace('.pdbqt', '')[:20], target)
     with open(cfg, 'w') as f:
@@ -206,12 +209,12 @@ def acoplar(lig, target, exhaustiveness=8):
         f.write('size_x = %s\n' % info['tamano'][0])
         f.write('size_y = %s\n' % info['tamano'][1])
         f.write('size_z = %s\n' % info['tamano'][2])
-        f.write('exhaustiveness = %s\n' % exhaustiveness)
         f.write('num_modes = 3\n')
         f.write('seed = 42\n')
-        f.write('cpu = 1\n')
+        f.write('thread = %d\n' % thread)
     try:
-        r = subprocess.run([VINA_GPU_BIN, '--config', cfg], capture_output=True, text=True, timeout=1800)
+        r = subprocess.run([VINA_GPU_BIN, '--config', cfg], capture_output=True, text=True,
+                           timeout=1800, cwd=BIN_DIR)
         out = (r.stdout or '') + (r.stderr or '')
         if r.returncode != 0:
             return None, 'vinagpu rc=%d %s' % (r.returncode, out[-200:])
