@@ -1,4 +1,4 @@
-gcc -o AutoDock-Vina-GPU-2-1 -I/tmp/boost_1_84_0 -I/tmp/boost_1_84_0/boost -I/tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/lib -I/tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc -I/usr/include ./main/main.cpp -O3 ./lib/*.cpp ./OpenCL/src/wrapcl.cpp /tmp/boost_1_84_0/libs/thread/src/pthread/thread.cpp /tmp/boost_1_84_0/libs/thread/src/pthread/once.cpp -lboost_program_options -lboost_system -lboost_filesystem -lOpenCL -lstdc++ -lm -lpthread -L/tmp/boost_1_84_0/stage/lib -L/usr/lib/x86_64-linux-gnu -DOPENCL_2_0 -DNVIDIA_PLATFORM -DSMALL_BOX -DBOOST_TIMER_ENABLE_DEPRECATED -DNDEBUG -DBUILD_KERNEL_FROM_SOURCE
+gcc -o AutoDock-Vina-GPU-2-1 -I/tmp/boost_1_84_0 -I/tmp/boost_1_84_0/boost -I/tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/lib -I/tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc -I/usr/include ./main/main.cpp -O3 ./lib/*.cpp ./OpenCL/src/wrapcl.cpp /tmp/boost_1_84_0/libs/thread/src/pthread/thread.cpp /tmp/boost_1_84_0/libs/thread/src/pthread/once.cpp -lboost_program_options -lboost_system -lboost_filesystem -lOpenCL -lstdc++ -lm -lpthread -L/usr/lib/x86_64-linux-gnu -DOPENCL_2_0 -DNVIDIA_PLATFORM -DSMALL_BOX -DBOOST_TIMER_ENABLE_DEPRECATED -DNDEBUG -DBUILD_KERNEL_FROM_SOURCE
 In file included from /usr/include/CL/cl.h:20,
                  from /usr/include/CL/opencl.h:24,
                  from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
@@ -141,8 +141,12 @@ In file included from /usr/include/CL/opencl.h:24,
 ./OpenCL/src/wrapcl.cpp:427:10: warning: ignoring return value of ‘size_t fread(void*, size_t, size_t, FILE*)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
   427 |     fread(binary_buffer, sizeof(char), program_size, program_handle);
       |     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/usr/bin/ld: cannot find -lboost_program_options: No such file or directory
-/usr/bin/ld: cannot find -lboost_system: No such file or directory
-/usr/bin/ld: cannot find -lboost_filesystem: No such file or directory
+/usr/bin/ld: /tmp/ccKWI6fq.o: in function `std::experimental::filesystem::v1::__cxx11::path::path<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::experimental::filesystem::v1::__cxx11::path>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)':
+main.cpp:(.text._ZNSt12experimental10filesystem2v17__cxx114pathC2INSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES3_EERKT_[_ZNSt12experimental10filesystem2v17__cxx114pathC5INSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES3_EERKT_]+0x7f): undefined reference to `std::experimental::filesystem::v1::__cxx11::path::_M_split_cmpts()'
+/usr/bin/ld: /tmp/ccKWI6fq.o: in function `main':
+main.cpp:(.text.startup+0x1f04): undefined reference to `std::experimental::filesystem::v1::create_directory(std::experimental::filesystem::v1::__cxx11::path const&)'
+/usr/bin/ld: main.cpp:(.text.startup+0x1f51): undefined reference to `std::experimental::filesystem::v1::__cxx11::directory_iterator::directory_iterator(std::experimental::filesystem::v1::__cxx11::path const&, std::experimental::filesystem::v1::directory_options, std::error_code*)'
+/usr/bin/ld: main.cpp:(.text.startup+0x2a41): undefined reference to `std::experimental::filesystem::v1::__cxx11::directory_iterator::operator*() const'
+/usr/bin/ld: main.cpp:(.text.startup+0x2cda): undefined reference to `std::experimental::filesystem::v1::__cxx11::directory_iterator::operator++()'
 collect2: error: ld returned 1 exit status
 make: *** [Makefile:20: source] Error 1
