@@ -1,0 +1,148 @@
+gcc -o AutoDock-Vina-GPU-2-1 -I/tmp/boost_1_84_0 -I/tmp/boost_1_84_0/boost -I/tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/lib -I/tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc -I/usr/include ./main/main.cpp -O3 ./lib/*.cpp ./OpenCL/src/wrapcl.cpp /tmp/boost_1_84_0/libs/thread/src/pthread/thread.cpp /tmp/boost_1_84_0/libs/thread/src/pthread/once.cpp -lboost_program_options -lboost_system -lboost_filesystem -lOpenCL -lstdc++ -lm -lpthread -L/tmp/boost_1_84_0/stage/lib -L/usr/lib/x86_64-linux-gnu -DOPENCL_2_0 -DNVIDIA_PLATFORM -DSMALL_BOX -DBOOST_TIMER_ENABLE_DEPRECATED -DNDEBUG -DBUILD_KERNEL_FROM_SOURCE
+In file included from /usr/include/CL/cl.h:20,
+                 from /usr/include/CL/opencl.h:24,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/lib/monte_carlo.h:28,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/lib/parallel_mc.h:26,
+                 from ./main/main.cpp:34:
+/usr/include/CL/cl_version.h:22:104: note: ‘#pragma message: cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)’
+   22 | #pragma message("cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)")
+      |                                                                                                        ^
+In file included from /usr/include/CL/cl.h:20,
+                 from /usr/include/CL/opencl.h:24,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
+                 from ./lib/cache.h:32,
+                 from ./lib/cache.cpp:41:
+/usr/include/CL/cl_version.h:22:104: note: ‘#pragma message: cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)’
+   22 | #pragma message("cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)")
+      |                                                                                                        ^
+In file included from /usr/include/CL/cl.h:20,
+                 from /usr/include/CL/opencl.h:24,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
+                 from ./lib/cache.h:32,
+                 from ./lib/main_procedure_cl.cpp:1:
+/usr/include/CL/cl_version.h:22:104: note: ‘#pragma message: cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)’
+   22 | #pragma message("cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)")
+      |                                                                                                        ^
+In file included from /tmp/boost_1_84_0/boost/system/detail/requires_cxx11.hpp:9,
+                 from /tmp/boost_1_84_0/boost/system/detail/config.hpp:11,
+                 from /tmp/boost_1_84_0/boost/system/detail/error_category.hpp:13,
+                 from /tmp/boost_1_84_0/boost/system/error_category.hpp:10,
+                 from /tmp/boost_1_84_0/boost/filesystem/detail/path_traits.hpp:25,
+                 from /tmp/boost_1_84_0/boost/filesystem/path.hpp:21,
+                 from ./lib/common.h:41,
+                 from ./lib/igrid.h:26,
+                 from ./lib/cache.h:27,
+                 from ./lib/main_procedure_cl.cpp:1:
+/tmp/boost_1_84_0/boost/config/pragma_message.hpp:24:34: note: ‘#pragma message: This header is deprecated. Use the facilities in <boost/timer/timer.hpp> or <boost/timer/progress_display.hpp> instead.’
+   24 | # define BOOST_PRAGMA_MESSAGE(x) _Pragma(BOOST_STRINGIZE(message(x)))
+      |                                  ^~~~~~~
+/tmp/boost_1_84_0/boost/config/header_deprecated.hpp:23:37: note: in expansion of macro ‘BOOST_PRAGMA_MESSAGE’
+   23 | # define BOOST_HEADER_DEPRECATED(a) BOOST_PRAGMA_MESSAGE("This header is deprecated. Use " a " instead.")
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/progress.hpp:27:1: note: in expansion of macro ‘BOOST_HEADER_DEPRECATED’
+   27 | BOOST_HEADER_DEPRECATED( "the facilities in <boost/timer/timer.hpp> or <boost/timer/progress_display.hpp>" )
+      | ^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/config/pragma_message.hpp:24:34: note: ‘#pragma message: This header is deprecated. Use the facilities in <boost/timer/timer.hpp> instead.’
+   24 | # define BOOST_PRAGMA_MESSAGE(x) _Pragma(BOOST_STRINGIZE(message(x)))
+      |                                  ^~~~~~~
+/tmp/boost_1_84_0/boost/config/header_deprecated.hpp:23:37: note: in expansion of macro ‘BOOST_PRAGMA_MESSAGE’
+   23 | # define BOOST_HEADER_DEPRECATED(a) BOOST_PRAGMA_MESSAGE("This header is deprecated. Use " a " instead.")
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/timer.hpp:25:1: note: in expansion of macro ‘BOOST_HEADER_DEPRECATED’
+   25 | BOOST_HEADER_DEPRECATED( "the facilities in <boost/timer/timer.hpp>" )
+      | ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/cl.h:20,
+                 from /usr/include/CL/opencl.h:24,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
+                 from ./lib/monte_carlo.h:28,
+                 from ./lib/monte_carlo.cpp:23:
+/usr/include/CL/cl_version.h:22:104: note: ‘#pragma message: cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)’
+   22 | #pragma message("cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)")
+      |                                                                                                        ^
+In file included from /usr/include/CL/cl.h:20,
+                 from /usr/include/CL/opencl.h:24,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
+                 from ./lib/monte_carlo.h:28,
+                 from ./lib/parallel_mc.h:26,
+                 from ./lib/parallel_mc.cpp:24:
+/usr/include/CL/cl_version.h:22:104: note: ‘#pragma message: cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)’
+   22 | #pragma message("cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)")
+      |                                                                                                        ^
+In file included from /tmp/boost_1_84_0/boost/system/detail/requires_cxx11.hpp:9,
+                 from /tmp/boost_1_84_0/boost/system/detail/config.hpp:11,
+                 from /tmp/boost_1_84_0/boost/system/detail/error_category.hpp:13,
+                 from /tmp/boost_1_84_0/boost/system/error_category.hpp:10,
+                 from /tmp/boost_1_84_0/boost/filesystem/detail/path_traits.hpp:25,
+                 from /tmp/boost_1_84_0/boost/filesystem/path.hpp:21,
+                 from ./lib/common.h:41,
+                 from ./lib/parallel.h:28,
+                 from ./lib/parallel_mc.cpp:23:
+/tmp/boost_1_84_0/boost/config/pragma_message.hpp:24:34: note: ‘#pragma message: This header is deprecated. Use the facilities in <boost/timer/timer.hpp> or <boost/timer/progress_display.hpp> instead.’
+   24 | # define BOOST_PRAGMA_MESSAGE(x) _Pragma(BOOST_STRINGIZE(message(x)))
+      |                                  ^~~~~~~
+/tmp/boost_1_84_0/boost/config/header_deprecated.hpp:23:37: note: in expansion of macro ‘BOOST_PRAGMA_MESSAGE’
+   23 | # define BOOST_HEADER_DEPRECATED(a) BOOST_PRAGMA_MESSAGE("This header is deprecated. Use " a " instead.")
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/progress.hpp:27:1: note: in expansion of macro ‘BOOST_HEADER_DEPRECATED’
+   27 | BOOST_HEADER_DEPRECATED( "the facilities in <boost/timer/timer.hpp> or <boost/timer/progress_display.hpp>" )
+      | ^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/config/pragma_message.hpp:24:34: note: ‘#pragma message: This header is deprecated. Use the facilities in <boost/timer/timer.hpp> instead.’
+   24 | # define BOOST_PRAGMA_MESSAGE(x) _Pragma(BOOST_STRINGIZE(message(x)))
+      |                                  ^~~~~~~
+/tmp/boost_1_84_0/boost/config/header_deprecated.hpp:23:37: note: in expansion of macro ‘BOOST_PRAGMA_MESSAGE’
+   23 | # define BOOST_HEADER_DEPRECATED(a) BOOST_PRAGMA_MESSAGE("This header is deprecated. Use " a " instead.")
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/timer.hpp:25:1: note: in expansion of macro ‘BOOST_HEADER_DEPRECATED’
+   25 | BOOST_HEADER_DEPRECATED( "the facilities in <boost/timer/timer.hpp>" )
+      | ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /tmp/boost_1_84_0/boost/config/header_deprecated.hpp:18,
+                 from /tmp/boost_1_84_0/boost/progress.hpp:26,
+                 from ./lib/parallel_progress.h:26,
+                 from ./lib/parallel_progress.cpp:25:
+/tmp/boost_1_84_0/boost/config/pragma_message.hpp:24:34: note: ‘#pragma message: This header is deprecated. Use the facilities in <boost/timer/timer.hpp> or <boost/timer/progress_display.hpp> instead.’
+   24 | # define BOOST_PRAGMA_MESSAGE(x) _Pragma(BOOST_STRINGIZE(message(x)))
+      |                                  ^~~~~~~
+/tmp/boost_1_84_0/boost/config/header_deprecated.hpp:23:37: note: in expansion of macro ‘BOOST_PRAGMA_MESSAGE’
+   23 | # define BOOST_HEADER_DEPRECATED(a) BOOST_PRAGMA_MESSAGE("This header is deprecated. Use " a " instead.")
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/progress.hpp:27:1: note: in expansion of macro ‘BOOST_HEADER_DEPRECATED’
+   27 | BOOST_HEADER_DEPRECATED( "the facilities in <boost/timer/timer.hpp> or <boost/timer/progress_display.hpp>" )
+      | ^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/config/pragma_message.hpp:24:34: note: ‘#pragma message: This header is deprecated. Use the facilities in <boost/timer/timer.hpp> instead.’
+   24 | # define BOOST_PRAGMA_MESSAGE(x) _Pragma(BOOST_STRINGIZE(message(x)))
+      |                                  ^~~~~~~
+/tmp/boost_1_84_0/boost/config/header_deprecated.hpp:23:37: note: in expansion of macro ‘BOOST_PRAGMA_MESSAGE’
+   23 | # define BOOST_HEADER_DEPRECATED(a) BOOST_PRAGMA_MESSAGE("This header is deprecated. Use " a " instead.")
+      |                                     ^~~~~~~~~~~~~~~~~~~~
+/tmp/boost_1_84_0/boost/timer.hpp:25:1: note: in expansion of macro ‘BOOST_HEADER_DEPRECATED’
+   25 | BOOST_HEADER_DEPRECATED( "the facilities in <boost/timer/timer.hpp>" )
+      | ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/cl.h:20,
+                 from /usr/include/CL/opencl.h:24,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/wrapcl.h:2,
+                 from ./OpenCL/src/wrapcl.cpp:1:
+/usr/include/CL/cl_version.h:22:104: note: ‘#pragma message: cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)’
+   22 | #pragma message("cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 300 (OpenCL 3.0)")
+      |                                                                                                        ^
+./OpenCL/src/wrapcl.cpp: In function ‘void SetupQueue(_cl_command_queue**, cl_context, _cl_device_id**)’:
+./OpenCL/src/wrapcl.cpp:334:34: warning: ‘_cl_command_queue* clCreateCommandQueue(cl_context, cl_device_id, cl_command_queue_properties, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+  334 |     *queue = clCreateCommandQueue(context, devices[0], *props, &err); checkErr(err);
+      |              ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:24,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/commonMacros.h:13,
+                 from /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1/OpenCL/inc/wrapcl.h:2,
+                 from ./OpenCL/src/wrapcl.cpp:1:
+/usr/include/CL/cl.h:1906:1: note: declared here
+ 1906 | clCreateCommandQueue(cl_context                     context,
+      | ^~~~~~~~~~~~~~~~~~~~
+./OpenCL/src/wrapcl.cpp: In function ‘_cl_program* SetupBuildProgramWithBinary(cl_context, _cl_device_id**, const char*)’:
+./OpenCL/src/wrapcl.cpp:427:10: warning: ignoring return value of ‘size_t fread(void*, size_t, size_t, FILE*)’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  427 |     fread(binary_buffer, sizeof(char), program_size, program_handle);
+      |     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/bin/ld: cannot find -lboost_program_options: No such file or directory
+/usr/bin/ld: cannot find -lboost_system: No such file or directory
+/usr/bin/ld: cannot find -lboost_filesystem: No such file or directory
+collect2: error: ld returned 1 exit status
+make: *** [Makefile:20: source] Error 1
