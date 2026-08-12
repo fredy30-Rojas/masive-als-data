@@ -32,11 +32,19 @@ if gpu.returncode != 0:
     raise SystemExit(1)
 print([l for l in gpu.stdout.splitlines() if 'Tesla' in l or 'NVIDIA' in l or 'P100' in l or 'T4' in l][:2], flush=True)
 
-# --- 1) Obtener binario Vina-GPU ---
-if not os.path.exists(VINA_GPU_BIN):
+# --- 1) Obtener binario Vina-GPU (busqueda robusta: tolera cualquier anidacion) ---
+def buscar_binario(base):
+    if not base or not os.path.exists(base):
+        return None
+    hits = glob.glob(base + '/**/AutoDock-Vina-GPU-2-1', recursive=True)
+    return hits[0] if hits else None
+
+# 1a) Kaggle: Kaggle descomprime los tar.gz solos dentro del dataset (a veces con doble carpeta)
+VINA_GPU_BIN = buscar_binario(BIN_DIR) or buscar_binario(IN)
+if not VINA_GPU_BIN:
+    # 1b) Descargar desde GitHub (Colab) o extraer el tar del dataset (Kaggle)
     os.makedirs(BIN_DIR, exist_ok=True)
     pkg = '/tmp/vinagpu_linux.tar.gz'
-    # Con internet: descarga desde GitHub
     internet = True
     try:
         urllib.request.urlopen('https://raw.githubusercontent.com', timeout=10).close()
@@ -49,18 +57,29 @@ if not os.path.exists(VINA_GPU_BIN):
             print('Descarga GitHub fallo:', str(ex)[:100], flush=True)
             internet = False
     if not internet and EN_KAGGLE:
-        # Sin internet: usar el dataset (si Fredy lo sube)
         src = IN + '/vinagpu_linux.tar.gz'
+        if not os.path.exists(src):
+            # el dataset ya lo trae descomprimido en alguna parte
+            for raiz, _, archivos in os.walk(IN):
+                if 'vinagpu_linux.tar.gz' in archivos:
+                    src = os.path.join(raiz, 'vinagpu_linux.tar.gz')
+                    break
         if os.path.exists(src):
             shutil.copy(src, pkg)
-    if not os.path.exists(pkg):
-        print('ERROR: no se pudo obtener el binario Vina-GPU.', flush=True)
-        raise SystemExit(1)
-    import tarfile
-    with tarfile.open(pkg) as t:
-        t.extractall(BIN_DIR)
-    os.chmod(VINA_GPU_BIN, 0o755)
+    if os.path.exists(pkg):
+        import tarfile
+        with tarfile.open(pkg) as t:
+            t.extractall(BIN_DIR)
+    VINA_GPU_BIN = buscar_binario(BIN_DIR)
+if not VINA_GPU_BIN:
+    print('ERROR: no se pudo obtener el binario Vina-GPU.', flush=True)
+    print('Kaggle: el dataset masive-als-datos debe incluir vinagpu_linux (v2).', flush=True)
+    raise SystemExit(1)
+# carpeta real del binario (los kernels ./OpenCL/ estan junto a el)
+BIN_DIR = os.path.dirname(VINA_GPU_BIN)
+os.chmod(VINA_GPU_BIN, 0o755)
 print('Binario Vina-GPU listo:', VINA_GPU_BIN, flush=True)
+print('Kernels:', sorted(glob.glob(BIN_DIR + '/OpenCL/src/kernels/*.cl')), flush=True)
 
 # --- 2) Datos (Kaggle: dataset; Colab: GitHub) ---
 for sub in ['receptores', 'ligandos', 'resultados']:
