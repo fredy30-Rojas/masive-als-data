@@ -16,18 +16,21 @@ jobs:
       - name: Instalar dependencias
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq gcc g++ make wget unzip \
+          sudo apt-get install -y -qq gcc g++ make wget \
             libboost-program-options-dev libboost-filesystem-dev \
-            libboost-system-dev ocl-icd-opencl-dev opencl-headers
+            libboost-system-dev libboost-thread-dev \
+            ocl-icd-opencl-dev opencl-headers
           echo "Dependencias OK"
 
-      - name: Descargar Boost 1.84 (fuente para thread.cpp/once.cpp)
+      - name: Descargar 2 fuentes de Boost (thread.cpp y once.cpp)
         run: |
-          cd /tmp
-          wget -q https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.tar.gz
-          tar -xzf boost-1.84.0.tar.gz
-          ls -d /tmp/boost_1_84_0
-          echo "Boost OK"
+          mkdir -p /tmp/boost_src/pthread
+          wget -q -O /tmp/boost_src/pthread/thread.cpp \
+            https://raw.githubusercontent.com/boostorg/thread/boost-1.84.0/src/pthread/thread.cpp
+          wget -q -O /tmp/boost_src/pthread/once.cpp \
+            https://raw.githubusercontent.com/boostorg/thread/boost-1.84.0/src/pthread/once.cpp
+          ls -la /tmp/boost_src/pthread/
+          echo "Boost src OK"
 
       - name: Descargar Vina-GPU-2.1
         run: |
@@ -38,28 +41,47 @@ jobs:
       - name: Compilar AutoDock-Vina-GPU-2.1
         run: |
           cd /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1
-          # Ajustar paths para el sistema (boost de apt + OpenCL de apt)
-          sed -i 's|^BOOST_LIB_PATH=.*|BOOST_LIB_PATH=/tmp/boost_1_84_0|' Makefile
-          sed -i 's|^OPENCL_LIB_PATH=.*|OPENCL_LIB_PATH=/usr|' Makefile
-          sed -i 's|^LIB_PATH=.*|LIB_PATH=-L$(BOOST_LIB_PATH)/stage/lib -L/usr/lib/x86_64-linux-gnu|' Makefile
-          # boost de apt provee -lboost_program_options/-lboost_system/-lboost_filesystem en /usr/lib
+          # Escribir Makefile adaptado (boost de apt + OpenCL de apt)
+          cat > Makefile <<'EOF'
+          WORK_DIR=/tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1
+          BOOST_LIB_PATH=/usr
+          OPENCL_LIB_PATH=/usr
+          OPENCL_VERSION=-DOPENCL_2_0
+          GPU_PLATFORM=-DNVIDIA_PLATFORM
+          DOCKING_BOX_SIZE=-DSMALL_BOX
+          BOOST_INC_PATH=-I/usr/include
+          VINA_GPU_INC_PATH=-I$(WORK_DIR)/lib -I$(WORK_DIR)/OpenCL/inc
+          OPENCL_INC_PATH=-I/usr/include
+          LIB1=-lboost_program_options -lboost_system -lboost_filesystem -lboost_thread -lOpenCL
+          LIB2=-lstdc++ -lstdc++fs
+          LIB3=-lm -lpthread
+          LIB_PATH=-L/usr/lib/x86_64-linux-gnu
+          SRC=./lib/*.cpp ./OpenCL/src/wrapcl.cpp /tmp/boost_src/pthread/thread.cpp /tmp/boost_src/pthread/once.cpp
+          MACRO=$(OPENCL_VERSION) $(GPU_PLATFORM) $(DOCKING_BOX_SIZE) -DBOOST_TIMER_ENABLE_DEPRECATED
+          all:out
+          out:./main/main.cpp
+          	gcc -o AutoDock-Vina-GPU-2-1 $(BOOST_INC_PATH) $(VINA_GPU_INC_PATH) $(OPENCL_INC_PATH) ./main/main.cpp -O3 $(SRC) $(LIB1) $(LIB2) $(LIB3) $(LIB_PATH) $(MACRO) -DNDEBUG
+          source:./main/main.cpp
+          	gcc -o AutoDock-Vina-GPU-2-1 $(BOOST_INC_PATH) $(VINA_GPU_INC_PATH) $(OPENCL_INC_PATH) ./main/main.cpp -O3 $(SRC) $(LIB1) $(LIB2) $(LIB3) $(LIB_PATH) $(MACRO) -DNDEBUG -DBUILD_KERNEL_FROM_SOURCE
+          clean:
+          	rm -f AutoDock-Vina-GPU-2-1
+          EOF
           make clean
-          make source 2>&1 | tail -20
+          make source 2>&1 | tail -30
           ls -la AutoDock-Vina-GPU-2-1
           file AutoDock-Vina-GPU-2-1
 
-      - name: Probar --help
+      - name: Probar binario
         run: |
           cd /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1
-          # El binario necesita libOpenCL; sin GPU solo probamos que el binario existe y es ELF
-          ./AutoDock-Vina-GPU-2-1 --help 2>&1 | head -5 || echo "Sin GPU en CI: el binario no puede inicializar OpenCL (esperado). El binario es valido."
+          ldd AutoDock-Vina-GPU-2-1 2>&1 | head -10 || true
+          ./AutoDock-Vina-GPU-2-1 --help 2>&1 | head -5 || echo "Sin GPU en CI: no puede inicializar OpenCL (esperado). El binario es valido."
 
       - name: Empaquetar binario
         run: |
           cd /tmp/Vina-GPU-2.1/AutoDock-Vina-GPU-2.1
           mkdir -p /tmp/out/vinagpu_linux
           cp AutoDock-Vina-GPU-2-1 /tmp/out/vinagpu_linux/
-          # Copiar tambien las librerias OpenCL de apt (libOpenCL.so.1) por si hacen falta en CI
           cp /usr/lib/x86_64-linux-gnu/libOpenCL.so.1* /tmp/out/vinagpu_linux/ 2>/dev/null || true
           cd /tmp/out
           tar -czf vinagpu_linux.tar.gz vinagpu_linux
