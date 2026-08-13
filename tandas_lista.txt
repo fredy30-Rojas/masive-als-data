@@ -1,0 +1,9 @@
+colab_ligandos50_plano.tar.gz
+ligandos_ela_plano.tar.gz
+fda_full_plano.tar.gz
+ligandos_batch2_plano.tar.gz
+ligandos_batch3_plano.tar.gz
+ligandos_batch6_plano.tar.gz
+ligandos_batch7_plano.tar.gz
+ligandos_batch10_plano.tar.gz
+ligandos_batch12_plano.tar.gz
