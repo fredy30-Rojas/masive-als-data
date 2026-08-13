@@ -2,6 +2,14 @@
 
 Fredy quiere aprovechar al MÁXIMO las horas de GPU gratis cada día. Vina-GPU ya está validado: los motores son compatibles con Vina 1.2.5 (diferencia media 0,60, máxima 1,31, umbral 1,5 → OK). Ahora toca trabajar al 100%. Léelo todo antes de empezar.
 
+## ACCIÓN INMEDIATA HOY (13 agosto, tarde — hecho por Claude)
+
+- **Kaggle: la GPU YA funciona** (Tesla P100-PCIE-16GB detectada con nvidia-smi rc=0). El último run falló solo porque el kernel se lanzó SIN el dataset adjuntado ("no hay datos en /kaggle/input"). YA CORREGIDO: el kernel `yograbotodo/masive-als-vinagpu` está en **versión 10** con el dataset `yograbotodo/masive-als-datos` en dataset_sources, GPU activada, internet activada, tanda completa (VALIDAR=False), y los 85 ligandos ELA que se descargan solos desde GitHub (celda 2c).
+- **TU ÚNICA TAREA EN KAGGLE:** abrir https://www.kaggle.com/code/yograbotodo/masive-als-vinagpu y pulsar **Run**. Verificar en el log: "Tesla P100", "Ligandos totales con ELA: 135", pares pendientes ~200, y que corra la tanda de pares.
+- Si Run fallara con "no hay datos en /kaggle/input": pulsar + Add Input a la derecha y adjuntar `yograbotodo/masive-als-datos` manualmente, luego Run otra vez.
+- Al terminar (estado complete): bajar el log/output y copiar `resultados_vinagpu_kaggle.csv` al PC local en `Desktop\MASIVE-ALS-Colab\resultados\`.
+- **Colab T4:** el notebook `MASIVE-ALS_Colab_GPU_VinaGPU.ipynb` (tanda de impares, VALIDAR=False, con los 135 ligandos) está listo para ejecutar con entorno T4.
+
 ## Estado actual (13 agosto 2026, tarde)
 
 - **135 ligandos listos en el repo** `fredy30-Rojas/masive-als-data`:
