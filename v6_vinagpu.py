@@ -216,7 +216,7 @@ if VALIDAR and pendientes:
 # NOTA: Vina-GPU-2.1 NO acepta --exhaustiveness ni --cpu (comentados en su parser).
 # El control de esfuerzo es --thread (numero de tareas de computo en la GPU).
 # Ejecutamos con cwd=BIN_DIR para que encuentre los kernels ./OpenCL/ (default_work_path=".").
-def acoplar(lig, target, thread=8000):
+def acoplar(lig, target, seed, thread=8000):
     info = RECEPTORES[target]
     cfg = '/tmp/cfg_%s_%s.txt' % (os.path.basename(lig).replace('.pdbqt', '')[:20], target)
     with open(cfg, 'w') as f:
@@ -229,7 +229,7 @@ def acoplar(lig, target, thread=8000):
         f.write('size_y = %s\n' % info['tamano'][1])
         f.write('size_z = %s\n' % info['tamano'][2])
         f.write('num_modes = 3\n')
-        f.write('seed = 42\n')
+        f.write('seed = %d\n' % seed)
         f.write('thread = %d\n' % thread)
     try:
         r = subprocess.run([VINA_GPU_BIN, '--config', cfg], capture_output=True, text=True,
@@ -255,6 +255,7 @@ def tiene_atomos(lig):
     except Exception:
         return False
 
+SEEDS = [42, 2026, 777]   # 3 semillas por par (usamos la mejor afinidad)
 if pendientes:
     t0 = time.time()
     n_ok = 0
@@ -264,8 +265,16 @@ if pendientes:
             with open(SALTADOS, 'a') as f:
                 f.write(nombre + '\n')
             continue
-        energia, err = acoplar(lig, target)
-        if energia is not None:
+        energias = []
+        err = None
+        for sd in SEEDS:
+            e, er = acoplar(lig, target, sd)
+            if e is not None:
+                energias.append(e)
+            else:
+                err = er
+        if energias:
+            energia = min(energias)
             with open(CSV, 'a', newline='') as f:
                 csv.writer(f).writerow([nombre, target, energia, time.strftime('%Y-%m-%d %H:%M:%S')])
             n_ok += 1
