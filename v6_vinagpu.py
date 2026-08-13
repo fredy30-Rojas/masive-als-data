@@ -216,7 +216,7 @@ if VALIDAR and pendientes:
 # NOTA: Vina-GPU-2.1 NO acepta --exhaustiveness ni --cpu (comentados en su parser).
 # El control de esfuerzo es --thread (numero de tareas de computo en la GPU).
 # Ejecutamos con cwd=BIN_DIR para que encuentre los kernels ./OpenCL/ (default_work_path=".").
-def acoplar(lig, target, thread=32):
+def acoplar(lig, target, thread=8000):
     info = RECEPTORES[target]
     cfg = '/tmp/cfg_%s_%s.txt' % (os.path.basename(lig).replace('.pdbqt', '')[:20], target)
     with open(cfg, 'w') as f:
